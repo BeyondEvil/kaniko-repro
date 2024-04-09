@@ -1,0 +1,21 @@
+#!/bin/bash
+
+docker-compose up --build -d
+
+docker exec kaniko /bin/bash /opt/helper/entrypoint/docker-entrypoint.sh
+
+# In our real case this is replaced by a `git clone` run inside helper
+docker cp . helper:/opt/gitlab-runner/builds
+
+docker exec kaniko /kaniko/executor \
+        --context "/opt/gitlab-runner/builds" \
+        --dockerfile "/opt/gitlab-runner/builds/Dockerfile.helper" \
+        --destination "kaniko-repro/borken-helper:latest" \
+        --tar-path /workspace/borken-helper.tar \
+        --no-push
+
+docker load -i borken-helper.tar
+
+docker-compose -f docker-compose.borken.yml up -d
+
+docker exec kaniko-borken /bin/bash /opt/helper/entrypoint/docker-entrypoint.sh

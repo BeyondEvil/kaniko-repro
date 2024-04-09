@@ -1,0 +1,13 @@
+FROM debian:bullseye-slim
+
+RUN apt-get -q update && \
+    apt-get -q install -y tini=0.19.0-1 
+
+WORKDIR /opt/helper
+
+COPY docker-entrypoint.sh entrypoint/
+RUN chmod +x entrypoint/docker-entrypoint.sh
+
+VOLUME [ "/opt/helper", "/opt/gitlab-runner/builds" ]
+
+ENTRYPOINT [ "tini", "-e", "130", "-e", "143", "--", "tail", "-f", "/dev/null" ]

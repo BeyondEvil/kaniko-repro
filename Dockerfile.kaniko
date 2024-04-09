@@ -1,0 +1,9 @@
+FROM curlimages/curl:8.7.1 as base
+
+RUN curl -sSLo "bash" "https://github.com/robxu9/bash-static/releases/download/5.2.015-1.2.3-2/bash-linux-x86_64" && \
+    chmod +x bash
+
+FROM gcr.io/kaniko-project/executor:v1.21.1-debug as final
+
+COPY --from=base /home/curl_user/bash /busybox/
+RUN ln -s /busybox/bash /bin/bash

@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  helper:
+    container_name: helper
+    image: kaniko-repro/helper:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.helper
+    volumes:
+      - helper:/opt/helper
+      - helper:/opt/gitlab-runner/builds
+
+  kaniko:
+    container_name: kaniko
+    image: kaniko-repro/kaniko:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.kaniko
+      target: final
+    entrypoint: ["tail", "-f", "/dev/null"]
+    volumes:
+      - helper:/opt/helper
+      - helper:/opt/gitlab-runner/builds
+      - "${PWD}:/workspace"
+
+volumes:
+  helper:

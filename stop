@@ -1,0 +1,13 @@
+#!/bin/bash
+
+docker-compose down
+
+docker-compose -f docker-compose.borken.yml down
+
+rm borken-helper.tar
+
+docker rmi $(docker images 'kaniko-repro/borken-helper' -a -q)
+
+docker volume rm kaniko-repro_helper
+
+docker volume rm kaniko-repro_borken-helper

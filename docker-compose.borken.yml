@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  helper:
+    container_name: borken-helper
+    image: kaniko-repro/borken-helper:latest
+    volumes:
+      - borken-helper:/opt/helper
+      - borken-helper:/opt/gitlab-runner/builds
+
+  kaniko:
+    container_name: kaniko-borken
+    image: kaniko-repro/kaniko:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.kaniko
+      target: final
+    entrypoint: ["tail", "-f", "/dev/null"]
+    volumes:
+      - borken-helper:/opt/helper
+      - borken-helper:/opt/gitlab-runner/builds
+      - "${PWD}:/workspace"
+
+volumes:
+  borken-helper:
